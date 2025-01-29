@@ -2,14 +2,17 @@ import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ImageSourcePropType } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Song } from '../constants/MusicData';
+import { MusicListProps } from '../constants/types';
 
-interface MusicListProps {
-  songs: Song[];
-  currentSong: Song | null;
-  onSongSelect: (song: Song) => void;
-}
-
-export const MusicList: React.FC<MusicListProps> = ({ songs, currentSong, onSongSelect }) => {
+export const MusicList: React.FC<MusicListProps> = ({ 
+  songs, 
+  currentSong, 
+  onSongSelect,
+  favorites,
+  onToggleFavorite,
+  playlists,
+  onAddToPlaylist 
+}) => {
   const renderItem = ({ item }: { item: Song }) => (
     <TouchableOpacity
       style={[
@@ -29,11 +32,23 @@ export const MusicList: React.FC<MusicListProps> = ({ songs, currentSong, onSong
         <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
         <Text style={styles.artist} numberOfLines={1}>{item.artist}</Text>
       </View>
-      {currentSong?.id === item.id && (
-        <View style={styles.playingIndicator}>
-          <Ionicons name="musical-notes" size={16} color="#9B6B9E" />
-        </View>
-      )}
+      <View style={styles.actions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => onToggleFavorite(item)}
+        >
+          <Ionicons
+            name={favorites.some(fav => fav.id === item.id) ? "heart" : "heart-outline"}
+            size={24}
+            color={favorites.some(fav => fav.id === item.id) ? "#9B6B9E" : "#9B9B9B"}
+          />
+        </TouchableOpacity>
+        {currentSong?.id === item.id && (
+          <View style={styles.playingIndicator}>
+            <Ionicons name="musical-notes" size={16} color="#9B6B9E" />
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 
@@ -123,5 +138,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#3A3A3A',
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 8,
+    marginLeft: 8,
   },
 }); 

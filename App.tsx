@@ -6,10 +6,13 @@ import { MusicList } from './components/MusicList';
 import { MusicPlayer } from './components/MusicPlayer';
 import { PlaylistManager } from './components/PlaylistManager';
 import { NavigationBar } from './components/NavigationBar';
+import { SearchBar } from './components/SearchBar';
+import { PlaylistStats } from './components/PlaylistStats';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { defaultMusicData, Song, loadSongsFromDevice } from './constants/MusicData';
 import { Playlist } from './constants/types';
 
-type Screen = 'songs' | 'playlists';
+type Screen = 'songs' | 'playlists' | 'favorites';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('songs');
@@ -23,6 +26,7 @@ export default function App() {
   const [favorites, setFavorites] = useState<Song[]>([]);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setupAudio();
@@ -234,12 +238,33 @@ export default function App() {
     setIsPlayerExpanded(!isPlayerExpanded);
   };
 
+  // Filtered songs based on search query
+  const filteredSongs: Song[] = songs.filter(song => 
+    song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    song.artist.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Filtered playlists based on search query
+  const filteredPlaylists: Playlist[] = playlists.filter(playlist =>
+    !playlist.isFolder && playlist.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderCurrentScreen = () => {
-    switch (currentScreen) {
-      case 'songs':
-        return (
+    const content = (
+      <>
+        <SearchBar
+          onSearch={setSearchQuery}
+          placeholder={
+            currentScreen === 'songs' 
+              ? 'Search songs...' 
+              : currentScreen === 'playlists'
+              ? 'Search playlists...'
+              : 'Search favorites...'
+          }
+        />
+        {currentScreen === 'songs' ? (
           <MusicList
-            songs={songs}
+            songs={filteredSongs}
             currentSong={currentSong}
             onSongSelect={handleSongSelect}
             favorites={favorites}
@@ -247,24 +272,42 @@ export default function App() {
             playlists={playlists}
             onAddToPlaylist={handleAddToPlaylist}
           />
-        );
-      case 'playlists':
-        return (
-          <PlaylistManager
-            playlists={playlists}
+        ) : currentScreen === 'favorites' ? (
+          <MusicList
+            songs={favorites}
             currentSong={currentSong}
-            onCreatePlaylist={handleCreatePlaylist}
-            onCreateFolder={handleCreatePlaylistFolder}
-            onAddToPlaylist={handleAddToPlaylist}
-            onRemoveFromPlaylist={handleRemoveFromPlaylist}
-            onPlaylistSelect={handlePlaylistSelect}
             onSongSelect={handleSongSelect}
             favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            playlists={playlists}
+            onAddToPlaylist={handleAddToPlaylist}
           />
-        );
-      default:
-        return null;
-    }
+        ) : (
+          <>
+            <PlaylistManager
+              playlists={filteredPlaylists}
+              currentSong={currentSong}
+              onCreatePlaylist={handleCreatePlaylist}
+              onCreateFolder={handleCreatePlaylistFolder}
+              onAddToPlaylist={handleAddToPlaylist}
+              onRemoveFromPlaylist={handleRemoveFromPlaylist}
+              onPlaylistSelect={handlePlaylistSelect}
+              onSongSelect={handleSongSelect}
+              favorites={favorites}
+            />
+            {currentPlaylist && !currentPlaylist.isFolder && (
+              <PlaylistStats playlist={currentPlaylist} />
+            )}
+          </>
+        )}
+      </>
+    );
+
+    return (
+      <ErrorBoundary>
+        {content}
+      </ErrorBoundary>
+    );
   };
 
   return (
@@ -276,7 +319,7 @@ export default function App() {
       {currentSong && (
         <MusicPlayer
           currentSong={currentSong}
-          songs={currentPlaylist?.songs || songs}
+          songs={currentPlaylist?.songs || filteredSongs}
           onNextSong={handleNextSong}
           onPreviousSong={handlePreviousSong}
           shuffleMode={shuffleMode}

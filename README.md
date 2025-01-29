@@ -1,37 +1,41 @@
 # Music Player App
 
-A modern, feature-rich music player application built with React Native and Expo.
+A modern and feature-rich music player built with React Native and Expo.
 
 ## Features
 
 ### Music Playback
-- 🎵 Play/pause, next/previous track controls
-- 🔄 Repeat modes (off/one/all)
-- 🔀 Shuffle mode
-- 📊 Progress bar with time display
-- 🔊 Volume control
+- Play/pause, skip, and previous track controls
+- Shuffle mode for random playback
+- Repeat modes (off/one/all)
+- Progress bar with time display
+- Volume control
+- Background playback support
 
 ### Playlist Management
-- 📁 Create and manage folders
-- 📝 Create playlists (in folders or root)
-- ❤️ Special Favorites folder
-- ➕ Add songs to playlists
-- 🗑️ Remove songs from playlists
-- 📱 Minimized and expanded player views
+- Create and manage multiple playlists
+- Create folders to organize playlists
+- Add/remove songs from playlists
+- View playlist statistics (total duration, song count, etc.)
+- Special Favorites section for quick access to favorite songs
 
 ### User Interface
-- 🌙 Dark theme with modern design
-- 🎨 Beautiful animations and transitions
-- 📱 Responsive layout
-- 👆 Gesture controls for player expansion
-- 🎵 Now playing indicators
+- Modern dark theme design
+- Smooth animations and transitions
+- Minimized and expanded player views
+- Beautiful album artwork display
+- Loading screen with app logo
+- Intuitive navigation bar with three main sections:
+  - Songs: Browse all available music
+  - Favorites: Quick access to favorite tracks
+  - Playlists: Manage your playlists and folders
 
 ### Smart Features
-- ❤️ Mark songs as favorites
-- 📂 Hierarchical folder organization
-- 🎯 Direct song playback from playlists
-- 🔄 Auto-update of favorites folder
-- 📱 Persistent playback controls
+- Search functionality for songs and playlists
+- Error boundary for graceful error handling
+- Automatic media library scanning
+- Real-time playlist statistics
+- Favorites system for marking preferred songs
 
 ## Technical Details
 
@@ -39,64 +43,64 @@ A modern, feature-rich music player application built with React Native and Expo
 - React Native
 - Expo
 - TypeScript
-- React Native Gesture Handler
-- Expo AV for audio playback
+- expo-av for audio playback
+- expo-media-library for accessing device media
+- React Native Gesture Handler for touch interactions
 
-### Architecture
-- Clean component structure
-- Type-safe implementation
-- State management using React hooks
-- Modular and maintainable code
+### Prerequisites
+- Node.js
+- npm or yarn
+- Expo CLI
+- Android Studio (for Android development)
+- Xcode (for iOS development)
 
 ## Installation
 
 1. Clone the repository:
-\`\`\`bash
-git clone https://github.com/HadZzz/musik-palyer.git
-\`\`\`
+```bash
+git clone [repository-url]
+```
 
 2. Install dependencies:
-\`\`\`bash
-cd musik-palyer
+```bash
+cd music-player
 npm install
-\`\`\`
+```
 
 3. Start the development server:
-\`\`\`bash
-npm start
-\`\`\`
+```bash
+expo start
+```
+
+4. Run on your device:
+- Scan the QR code with Expo Go app (Android)
+- Press 'i' for iOS simulator
+- Press 'a' for Android emulator
 
 ## Usage
 
-### Playing Music
-- Tap on any song to start playback
-- Use the bottom player controls for basic functions
-- Swipe up on the mini player to see full controls
-
-### Managing Playlists
-1. Navigate to the Playlists tab
-2. Use the + button to create a new playlist
-3. Use the folder button to create a new folder
-4. Add songs to playlists from the song menu
-
-### Favorites
-- Tap the heart icon to favorite a song
-- Find all favorites in the special Favorites folder
-- Favorites are automatically synced
+1. Launch the app
+2. Grant media library permissions when prompted
+3. Browse your music in the Songs tab
+4. Create playlists and organize your music
+5. Mark songs as favorites for quick access
+6. Use the search feature to find specific songs or playlists
+7. Enjoy your music with various playback controls
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (\`git checkout -b feature/AmazingFeature\`)
-3. Commit your changes (\`git commit -m 'Add some AmazingFeature'\`)
-4. Push to the branch (\`git push origin feature/AmazingFeature\`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
-- Icons by Ionicons
-- Audio playback powered by Expo AV
-- Gesture handling by React Native Gesture Handler
+
+- Thanks to Expo team for the amazing framework
+- Icons provided by Ionicons
+- All contributors who have helped with the project

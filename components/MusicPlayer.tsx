@@ -38,12 +38,13 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const wasPlayingRef = useRef(false);
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT - MINIMIZED_HEIGHT)).current;
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(1)).current;
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [createMode, setCreateMode] = useState<'folder' | 'playlist'>('playlist');
   const [selectedFolder, setSelectedFolder] = useState<string | undefined>(undefined);
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     return sound
@@ -61,6 +62,45 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       loadAudio();
     }
   }, [currentSong]);
+
+  useEffect(() => {
+    if (currentSong) {
+      // Fade out
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: -50,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+        // Reset position
+        Animated.timing(slideAnim, {
+          toValue: 50,
+          duration: 0,
+          useNativeDriver: true,
+        }),
+        // Fade in with slide
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    }
+  }, [currentSong?.id]);
 
   const loadAudio = async () => {
     try {
@@ -183,22 +223,73 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     }
   };
 
-  const renderMinimizedPlayer = () => (
-    <TouchableOpacity style={styles.minimizedContainer} onPress={() => onToggleExpand()}>
+  const renderSongInfo = () => (
+    <Animated.View
+      style={[
+        styles.songInfo,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
+    >
+      <Text style={styles.title}>{currentSong.title}</Text>
+      <Text style={styles.artist}>{currentSong.artist}</Text>
+    </Animated.View>
+  );
+
+  const renderArtwork = () => (
+    <Animated.View
+      style={[
+        styles.artworkContainer,
+        {
+          opacity: fadeAnim,
+          transform: [
+            {
+              scale: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.8, 1],
+              }),
+            },
+          ],
+        },
+      ]}
+    >
       <Image
-        source={typeof currentSong.artwork === 'string' 
+        source={typeof currentSong.artwork === 'string'
           ? { uri: currentSong.artwork }
           : currentSong.artwork as ImageSourcePropType}
-        style={styles.miniArtwork}
+        style={styles.artwork}
       />
-      <View style={styles.miniInfo}>
-        <Text style={styles.miniTitle} numberOfLines={1}>
-          {currentSong.title}
-        </Text>
-        <Text style={styles.miniArtist} numberOfLines={1}>
-          {currentSong.artist}
-        </Text>
-      </View>
+    </Animated.View>
+  );
+
+  const renderMinimizedPlayer = () => (
+    <TouchableOpacity style={styles.minimizedContainer} onPress={() => onToggleExpand()}>
+      <Animated.View
+        style={[
+          styles.miniContent,
+          {
+            opacity: fadeAnim,
+            transform: [{ translateX: slideAnim }],
+          },
+        ]}
+      >
+        <Image
+          source={typeof currentSong.artwork === 'string' 
+            ? { uri: currentSong.artwork }
+            : currentSong.artwork as ImageSourcePropType}
+          style={styles.miniArtwork}
+        />
+        <View style={styles.miniInfo}>
+          <Text style={styles.miniTitle} numberOfLines={1}>
+            {currentSong.title}
+          </Text>
+          <Text style={styles.miniArtist} numberOfLines={1}>
+            {currentSong.artist}
+          </Text>
+        </View>
+      </Animated.View>
       <View style={styles.miniControls}>
         <TouchableOpacity onPress={onPreviousSong}>
           <Ionicons name="play-skip-back" size={24} color="#FFFFFF" />
@@ -230,17 +321,8 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <Ionicons name="chevron-down" size={30} color="#FFFFFF" />
           </TouchableOpacity>
 
-          <Image
-            source={typeof currentSong.artwork === 'string' 
-              ? { uri: currentSong.artwork }
-              : currentSong.artwork as ImageSourcePropType}
-            style={styles.artwork}
-          />
-
-          <View style={styles.songInfo}>
-            <Text style={styles.title}>{currentSong.title}</Text>
-            <Text style={styles.artist}>{currentSong.artist}</Text>
-          </View>
+          {renderArtwork()}
+          {renderSongInfo()}
 
           <View style={styles.controls}>
             <TouchableOpacity onPress={onShufflePress}>
@@ -680,5 +762,21 @@ const styles = StyleSheet.create({
   },
   hiddenPlaylist: {
     display: 'none',
+  },
+  artworkContainer: {
+    marginVertical: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5.46,
+    elevation: 9,
+  },
+  miniContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
 }); 

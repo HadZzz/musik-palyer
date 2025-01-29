@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-type Screen = 'songs' | 'playlists';
+type Screen = 'songs' | 'playlists' | 'favorites';
 
 interface NavigationBarProps {
   currentScreen: Screen;
@@ -19,13 +19,26 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         style={[styles.navItem, currentScreen === 'songs' && styles.activeNavItem]}
         onPress={() => onScreenChange('songs')}
       >
-        <Ionicons
-          name="musical-notes"
-          size={24}
-          color={currentScreen === 'songs' ? '#9B6B9E' : '#9B9B9B'}
+        <Image 
+          source={require('../assets/images/logo.jpeg')} 
+          style={styles.logo}
         />
         <Text style={[styles.navText, currentScreen === 'songs' && styles.activeNavText]}>
           Songs
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.navItem, currentScreen === 'favorites' && styles.activeNavItem]}
+        onPress={() => onScreenChange('favorites')}
+      >
+        <Ionicons
+          name="heart"
+          size={24}
+          color={currentScreen === 'favorites' ? '#9B6B9E' : '#9B9B9B'}
+        />
+        <Text style={[styles.navText, currentScreen === 'favorites' && styles.activeNavText]}>
+          Favorites
         </Text>
       </TouchableOpacity>
 
@@ -76,5 +89,10 @@ const styles = StyleSheet.create({
   },
   activeNavText: {
     color: '#9B6B9E',
+  },
+  logo: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
   },
 }); 
